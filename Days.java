@@ -11,13 +11,19 @@ public class Days {
     public static void main(String... args) {
         LocalDate today = LocalDate.now();
         String birthdateString = System.getenv("BIRTHDATE");
-        if (!birthdateString.isBlank()) {
+        if (birthdateString != null && !birthdateString.isBlank()) {
             LocalDate birthdate = LocalDate.parse(birthdateString);
             if (today.getMonth() == birthdate.getMonth() && 
                 today.getDayOfMonth() == birthdate.getDayOfMonth()) {
                 System.out.println("Happy birthday!");
             }
         }
+        
+        if (birthdateString == null || birthdateString.isBlank()) {
+            System.out.println("Unable to find enviromental variable");
+        }
+
+
         String userHomeDirectory = System.getProperty("user.home");
         if (userHomeDirectory.isBlank()) {
             System.out.println("unable to determine user home directory");
