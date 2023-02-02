@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.io.IOException;
+import java.time.format.DateTimeParseException;
 
 public class Days {
     public static void main(String... args) {
@@ -57,20 +58,41 @@ public class Days {
                     continue;
                 }
 
+                // Discard empty lines
+                if (line.isBlank()) {
+                    continue;
+                }
+
                 // Split line using static helper method
                 List<String> columns = Days.getColumns(line);
+                if (columns.size() != 3) {
+                    System.err.println("line should have 3 columns: " + line);
+                    continue;
+                }
 
-                // Make a new event instance by parsing the
-                // date in column #0, and collecting
-                // category and description strings from
-                // columns #1 and #2.
-                Event event = new Event(
-                    LocalDate.parse(columns.get(0)),
-                    columns.get(1),
-                    columns.get(2)
-                );
+                // Try to parse the date column.
+                // Discard the line if parsing fails.
+                LocalDate date = null;
+                String dateString = columns.get(0);
+                try {
+                     date = LocalDate.parse(dateString);
 
-                events.add(event);
+                    // Make a new event instance by parsing the
+                    // date in column #0, and collecting
+                    // category and description strings from
+                    // columns #1 and #2.
+                    Event event = new Event(
+                        date,
+                        columns.get(1),
+                        columns.get(2)
+                    );
+    
+                    events.add(event);
+                }
+                catch (java.time.format.DateTimeParseException dtpe) {
+                    System.err.println("bad date: " + dateString);
+                    continue;
+                }
             }
         }
         catch (IOException ioe) {
