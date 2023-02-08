@@ -20,14 +20,9 @@ public class Days {
             }
         }
         
-        if (birthdateString == null || birthdateString.isBlank()) {
-            System.out.println("Unable to find enviromental variable");
-        }
-
-
         String userHomeDirectory = System.getProperty("user.home");
         if (userHomeDirectory.isBlank()) {
-            System.out.println("unable to determine user home directory");
+            System.out.println("Unable to determine user home directory");
             System.exit(-1);
         }
 
