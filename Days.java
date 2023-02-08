@@ -84,7 +84,7 @@ public class Days {
     
                     events.add(event);
                 }
-                catch (java.time.format.DateTimeParseException dtpe) {
+                catch (DateTimeParseException dtpe) {
                     System.err.println("bad date: " + dateString);
                     continue;
                 }
