@@ -34,9 +34,9 @@ public class Event {
     public String getDifferenceString(Period p) {
         StringBuffer sb = new StringBuffer();
 
-        int years = p.getYears();
-        int months = p.getMonths();
-        int days = p.getDays();
+        int years = Math.abs(p.getYears());
+        int months = Math.abs(p.getMonths());
+        int days = Math.abs(p.getDays());
 
         // If all components are zero, must be today
         if (years == 0 && months == 0 && days == 0) {
