@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.io.IOException;
 import java.time.format.DateTimeParseException;
+import java.time.Period;
 
 public class Days {
     public static void main(String... args) {
@@ -98,7 +99,12 @@ public class Days {
         // If we are still here, we might have some events
         // in the list. Print them out:
         for (Event event: events) {
-            System.out.println(event);
+            System.out.print(event + " -- ");
+
+            Period difference = Period.between(event.getDate(), today);
+            //System.out.println("diff = " + diff);
+
+            System.out.println(event.getDifferenceString(difference));
         }
     }
 
