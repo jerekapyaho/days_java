@@ -32,7 +32,7 @@ public class Event {
     private String description;
 
     public String getDifferenceString(Period p) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         int years = Math.abs(p.getYears());
         int months = Math.abs(p.getMonths());
