@@ -2,5 +2,6 @@
 .DS_Store
 **makefile
 
-# Don't commit the opencsv JAR file
+# Don't commit the dependency JAR files
 opencsv-*.jar
+commons-lang3-*.jar

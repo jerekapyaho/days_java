@@ -8,6 +8,14 @@ import java.util.StringTokenizer;
 import java.io.IOException;
 import java.time.format.DateTimeParseException;
 import java.time.Period;
+import java.util.Map;
+import java.util.HashMap;
+import com.opencsv.CSVReaderHeaderAware;
+import com.opencsv.exceptions.CsvValidationException;
+import java.io.Reader;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 
 public class Days {
     public static void main(String... args) {
@@ -41,46 +49,22 @@ public class Days {
         // Create a new event list, initially empty.
         List<Event> events = new ArrayList<Event>();
 
-        // Read all the lines from the events file.
-        // Split them by commas and construct new Event instances.
-        // Note that we skip the first line (column headers).
+        // Read all the lines from the events file using 
+        // our helper based on opencsv.
         try {
-            List<String> lines = Files.readAllLines(eventsPath);
+            List<Map<String, String>> lineMaps = Days.readLineByLine(eventsPath);
+            //System.out.println(lineMaps);
 
-            boolean isHeaderLine = true;
-            for (String line : lines) {
-                if (isHeaderLine) {
-                    isHeaderLine = false;
-                    continue;
-                }
-
-                // Discard empty lines
-                if (line.isBlank()) {
-                    continue;
-                }
-
-                // Split line using static helper method
-                List<String> columns = Days.getColumns(line);
-                if (columns.size() != 3) {
-                    System.err.println("line should have 3 columns: " + line);
-                    continue;
-                }
-
-                // Try to parse the date column.
-                // Discard the line if parsing fails.
+            for (Map<String, String> map : lineMaps) {
                 LocalDate date = null;
-                String dateString = columns.get(0);
+                String dateString = map.get("date");
                 try {
-                     date = LocalDate.parse(dateString);
-
-                    // Make a new event instance by parsing the
-                    // date in column #0, and collecting
-                    // category and description strings from
-                    // columns #1 and #2.
+                    date = LocalDate.parse(dateString);
+    
                     Event event = new Event(
                         date,
-                        columns.get(1),
-                        columns.get(2)
+                        map.get("category"),
+                        map.get("description")
                     );
     
                     events.add(event);
@@ -91,8 +75,20 @@ public class Days {
                 }
             }
         }
+        catch (CsvValidationException cve) {
+            cve.printStackTrace();
+            System.exit(-1);
+        }
+        catch (FileNotFoundException fnfe) {
+            fnfe.printStackTrace();
+            System.exit(-1);
+        }
         catch (IOException ioe) {
             ioe.printStackTrace();
+            System.exit(-1);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
             System.exit(-1);
         }
 
@@ -108,18 +104,19 @@ public class Days {
         }
     }
 
-    // Split the line into columns by commas.
-    // Note that this will *not* work if the lines
-    // have columns with embedded commas in them.
-    // For proper CSV file processing, see OpenCSV,
-    // https://opencsv.sourceforge.net/
-    // and https://www.baeldung.com/opencsv
-    private static List<String> getColumns(String line) {
-        List<String> columns = new ArrayList<>();
-        StringTokenizer tokenizer = new StringTokenizer(line, ",");
-        while (tokenizer.hasMoreElements()) {
-            columns.add(tokenizer.nextToken());
+    // Read the CSV file one line at a time using a header-aware
+    // CSV reader from the opencsv library. Discards invalid lines.
+    public static List<Map<String, String>> readLineByLine(Path filePath)
+            throws Exception {
+        List<Map<String, String>> list = new ArrayList<>();
+        try (Reader reader = Files.newBufferedReader(filePath)) {
+            try (CSVReaderHeaderAware csvReader = new CSVReaderHeaderAware(reader)) {
+                Map<String, String> map;
+                while ((map = csvReader.readMap()) != null) {
+                    list.add(map);
+                }
+            }
         }
-        return columns;
+        return list;
     }
 }
