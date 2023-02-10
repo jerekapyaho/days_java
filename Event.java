@@ -31,7 +31,7 @@ public class Event {
     private String category;
     private String description;
 
-    public String getDifferenceString(Period p) {
+    public static String getDifferenceString(Period p) {
         StringBuilder sb = new StringBuilder();
 
         int years = Math.abs(p.getYears());

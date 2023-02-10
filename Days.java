@@ -104,7 +104,7 @@ public class Days {
             Period difference = Period.between(event.getDate(), today);
             //System.out.println("diff = " + diff);
 
-            System.out.println(event.getDifferenceString(difference));
+            System.out.println(Event.getDifferenceString(difference));
         }
     }
 
