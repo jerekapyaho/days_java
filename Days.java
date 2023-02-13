@@ -1,21 +1,9 @@
 import java.time.LocalDate;
+import java.time.Period;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.nio.file.Files;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
-import java.io.IOException;
-import java.time.format.DateTimeParseException;
-import java.time.Period;
-import java.util.Map;
-import java.util.HashMap;
-import com.opencsv.CSVReaderHeaderAware;
-import com.opencsv.exceptions.CsvValidationException;
-import java.io.Reader;
-
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 
 public class Days {
     public static void main(String... args) {
@@ -46,51 +34,15 @@ public class Days {
             System.exit(-1);
         }
 
-        // Create a new event list, initially empty.
-        List<Event> events = new ArrayList<Event>();
-
-        // Read all the lines from the events file using 
-        // our helper based on opencsv.
-        try {
-            List<Map<String, String>> lineMaps = Days.readLineByLine(eventsPath);
-            //System.out.println(lineMaps);
-
-            for (Map<String, String> map : lineMaps) {
-                LocalDate date = null;
-                String dateString = map.get("date");
-                try {
-                    date = LocalDate.parse(dateString);
-    
-                    Event event = new Event(
-                        date,
-                        map.get("category"),
-                        map.get("description")
-                    );
-    
-                    events.add(event);
-                }
-                catch (DateTimeParseException dtpe) {
-                    System.err.println("bad date: " + dateString);
-                    continue;
-                }
-            }
-        }
-        catch (CsvValidationException cve) {
-            cve.printStackTrace();
+        //System.out.println("Using EventManager to load events");
+        EventManager eventManager = EventManager.getInstance();
+        boolean success = eventManager.loadEvents(eventsPath);
+        if (!success) {
+            System.err.println("Error loading events");
             System.exit(-1);
         }
-        catch (FileNotFoundException fnfe) {
-            fnfe.printStackTrace();
-            System.exit(-1);
-        }
-        catch (IOException ioe) {
-            ioe.printStackTrace();
-            System.exit(-1);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            System.exit(-1);
-        }
+        //System.out.println("Events loaded successfully");
+        List<Event> events = eventManager.getEvents();
 
         // If we are still here, we might have some events
         // in the list. Print them out:
@@ -102,21 +54,22 @@ public class Days {
 
             System.out.println(Event.getDifferenceString(difference));
         }
-    }
 
-    // Read the CSV file one line at a time using a header-aware
-    // CSV reader from the opencsv library. Discards invalid lines.
-    public static List<Map<String, String>> readLineByLine(Path filePath)
-            throws Exception {
-        List<Map<String, String>> list = new ArrayList<>();
-        try (Reader reader = Files.newBufferedReader(filePath)) {
-            try (CSVReaderHeaderAware csvReader = new CSVReaderHeaderAware(reader)) {
-                Map<String, String> map;
-                while ((map = csvReader.readMap()) != null) {
-                    list.add(map);
-                }
-            }
+        // Test adding an event and saving events.
+        // If you run the program repeatedly, you will get one extra event
+        // per run (and will have to clean up later).
+        System.out.println("Event count = " + events.size());
+        Event newEvent = new Event(
+            LocalDate.now(), 
+            "test", 
+            "I just added this!"
+        );
+        events.add(newEvent);
+        success = eventManager.saveEvents(eventsPath);
+        if (!success) {
+            System.out.println("Error saving events");
+            System.exit(-1);
         }
-        return list;
+        System.out.println("Event count = " + events.size());
     }
 }
