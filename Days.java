@@ -4,8 +4,17 @@ import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Collections;
 
+/**
+ * Shows events from file.
+ */
 public class Days {
+    /**
+     * Main program.
+     * 
+     * @param args command-line arguments
+     */
     public static void main(String... args) {
         LocalDate today = LocalDate.now();
         String birthdateString = System.getenv("BIRTHDATE");
@@ -43,6 +52,8 @@ public class Days {
         }
         //System.out.println("Events loaded successfully");
         List<Event> events = eventManager.getEvents();
+
+        Collections.sort(events);
 
         // If we are still here, we might have some events
         // in the list. Print them out:

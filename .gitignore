@@ -2,6 +2,8 @@
 .DS_Store
 **makefile
 
-# Don't commit the dependency JAR files
-opencsv-*.jar
-commons-lang3-*.jar
+# Dependency JAR files
+libs/
+
+# JavaDoc documentation (can/will be regenerated)
+docs/

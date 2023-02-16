@@ -17,8 +17,16 @@ The opencsv and Apache Commons Lang JAR files should not be committed to version
 
 To compile (on Linux):
 
-    javac -classpath .:commons-lang3-3.12.0.jar:opencsv-5.7.1.jar *.java
+    javac -classpath .:libs/commons-lang3-3.12.0.jar:libs/opencsv-5.7.1.jar *.java
 
 To run (on Linux):
 
-    java -classpath .:commons-lang3-3.12.0.jar:opencsv-5.7.1.jar Days
+    java -classpath .:libs/commons-lang3-3.12.0.jar:libs/opencsv-5.7.1.jar Days
+
+## Generated documentation
+
+You can use the `javadoc` tool to generate documentation for the app:
+
+    javadoc -d docs -classpath .:libs/opencsv-5.7.1.jar *.java
+
+The documentation is generated in the `docs` subdirectory. 

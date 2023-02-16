@@ -2,6 +2,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Collections;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.nio.charset.Charset;
@@ -34,8 +37,12 @@ public class EventManager {
     // The singleton instance, created as necessary.
     private static EventManager instance = null;
 
-    // Static method to get the singleton instance. 
-    // Creates the instance if it does not already exist.
+    /**
+     * Static method to get the singleton instance.
+     * Creates the instance if it does not already exist.
+     * 
+     * @return the instance
+     */ 
     public static EventManager getInstance() {
         if (instance == null) {
             instance = new EventManager();
@@ -47,7 +54,7 @@ public class EventManager {
      * Loads the events from the file given in eventsPath.
      * 
      * @param eventsPath the path to the events file
-     * @return
+     * @return true if successful, false if there was an error
      */
     public boolean loadEvents(Path eventsPath) {
         // Read all the lines from the events file using 
@@ -112,6 +119,12 @@ public class EventManager {
         return list;
     }
 
+    /**
+     * Saves the events to the file at `eventsPath`.
+     * 
+     * @param eventsPath the path to the events file
+     * @return true if successful, false if there was an error
+     */
     public boolean saveEvents(Path eventsPath) {
         try {
             Writer writer = Files.newBufferedWriter(
@@ -134,9 +147,9 @@ public class EventManager {
                     "description"
                 }
             );
-            System.out.println("date,category,description");
+            //System.out.println("date,category,description");
 
-            // Write the events
+            // Write the events to the CSV file
             for (Event event: this.events) {
                 String[] entries = new String[] {
                     event.getDate().toString(),
@@ -169,6 +182,26 @@ public class EventManager {
      */
     public List<Event> getEvents() {
         return this.events;
+    }
+
+    /**
+     * Gets a sorted list of all the categories across all events.
+     * 
+     * @return the category list
+     */
+    public List<String> getCategories() {
+        // Each category string may be added to the set
+        // multiple times, but there will be only one of each. 
+        Set<String> categories = new HashSet<String>();
+        for (Event event: this.events) {
+            categories.add(event.getCategory());
+        }
+
+        // Create a new list based on the set of categories,
+        // then sort it.
+        List<String> result = new ArrayList<String>(categories);
+        Collections.sort(result);
+        return result;
     }
 
     private List<Event> events;
