@@ -65,22 +65,5 @@ public class Days {
 
             System.out.println(Event.getDifferenceString(difference));
         }
-
-        // Test adding an event and saving events.
-        // If you run the program repeatedly, you will get one extra event
-        // per run (and will have to clean up later).
-        System.out.println("Event count = " + events.size());
-        Event newEvent = new Event(
-            LocalDate.now(), 
-            "test", 
-            "I just added this!"
-        );
-        events.add(newEvent);
-        success = eventManager.saveEvents(eventsPath);
-        if (!success) {
-            System.out.println("Error saving events");
-            System.exit(-1);
-        }
-        System.out.println("Event count = " + events.size());
     }
 }

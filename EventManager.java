@@ -31,6 +31,9 @@ import com.opencsv.ICSVParser;
 public class EventManager {
     // Private constructor to prevent instantiation.
     private EventManager() {
+        // Ensure that the event list will never be null.
+        // Effective Java 2nd Ed, Item 43: "Return empty arrays
+        // or collections, not nulls"
         this.events = new ArrayList<Event>();
     }
 
@@ -57,6 +60,8 @@ public class EventManager {
      * @return true if successful, false if there was an error
      */
     public boolean loadEvents(Path eventsPath) {
+        List<Event> newEvents = new ArrayList<Event>();
+
         // Read all the lines from the events file using 
         // our helper based on opencsv.
         try {
@@ -75,7 +80,7 @@ public class EventManager {
                         map.get("description")
                     );
     
-                    this.events.add(event);
+                    newEvents.add(event);
                 }
                 catch (DateTimeParseException dtpe) {
                     System.err.println("bad date: " + dateString);
@@ -100,6 +105,12 @@ public class EventManager {
             return false;
         }
 
+        // We got here, so loading and parsing succeeded.
+        // It should now be safe to update the event list.
+        // We'll just construct a new list and let the old
+        // one be garbage collected.
+        this.events = new ArrayList<Event>(newEvents);
+        
         return true;
     }
 
@@ -126,6 +137,12 @@ public class EventManager {
      * @return true if successful, false if there was an error
      */
     public boolean saveEvents(Path eventsPath) {
+        // If there are no events, there is nothing to save,
+        // but it can still be considered a success.
+        if (this.events.size() == 0) {
+            return true;
+        }
+
         try {
             Writer writer = Files.newBufferedWriter(
                 eventsPath, 
@@ -147,7 +164,6 @@ public class EventManager {
                     "description"
                 }
             );
-            //System.out.println("date,category,description");
 
             // Write the events to the CSV file
             for (Event event: this.events) {
@@ -155,13 +171,7 @@ public class EventManager {
                     event.getDate().toString(),
                     event.getCategory(),
                     event.getDescription()
-                };
-                System.out.println(
-                    entries[0] + "," +
-                    entries[1] + "," + 
-                    entries[2]
-                );
-                
+                };                
                 csvWriter.writeNext(entries);
             }
 
