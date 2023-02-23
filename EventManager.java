@@ -54,6 +54,32 @@ public class EventManager {
     }
 
     /**
+     * Gets the path to the user's events file.
+     * 
+     * @return the path, or null if not found
+     */
+    public Path getEventsPath() {
+        String userHomeDirectory = System.getProperty("user.home");
+        if (userHomeDirectory.isBlank()) {
+            System.err.println("Unable to determine user home directory");
+            return null;
+        }
+
+        Path daysPath = Paths.get(userHomeDirectory, ".days");
+        if (Files.notExists(daysPath)) {
+            System.err.println(daysPath + " directory does not exist, please create it");
+            return null;
+        }
+        Path eventsPath = daysPath.resolve("events.csv");
+        if (Files.notExists(eventsPath)) {
+            System.err.println(eventsPath + " file not found");
+            return null;
+        }
+
+        return eventsPath;
+    }
+
+    /**
      * Loads the events from the file given in eventsPath.
      * 
      * @param eventsPath the path to the events file
