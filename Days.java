@@ -1,10 +1,12 @@
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Collections;
+import java.util.Formatter;
 
 /**
  * Shows events from file.
@@ -24,6 +26,16 @@ public class Days {
                 today.getDayOfMonth() == birthdate.getDayOfMonth()) {
                 System.out.println("Happy birthday!");
             }
+
+            long ageInDays = ChronoUnit.DAYS.between(birthdate, today);
+            StringBuilder sb = new StringBuilder();
+            Formatter fmt = new Formatter(sb);
+            fmt.format("You are %d days old.", ageInDays);
+            fmt.close();
+            if (ageInDays % 1000 == 0) {
+                sb.append(" That's a nice round number!");
+            }
+            System.out.println(sb.toString());            
         }
         
         String userHomeDirectory = System.getProperty("user.home");
